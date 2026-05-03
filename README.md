@@ -1,55 +1,101 @@
-## REQUERIMIENTOS BASE DE DATOS
+# Requerimientos Base de Datos
 
-###### RF = REQUERIMIENTO FUNCIONAL
+**Integrantes:**
+- Jose Daniel Carvajal Montañez
+- Juan Manuel Gil Quiroga
 
-## 📋 Lista de Requerimientos
-
-### 1. Gestión de Órdenes de Producción
-
-- RF01 — Crear órdenes de producción con número único, fecha y producto a fabricar
-- RF03 — Asociar cada orden a un producto terminado específico del catálogo
-- RF04 — Registrar la fecha de inicio y fecha de cierre real de cada orden
-- RF05 — Permitir consultar el historial completo de órdenes por producto o fecha
+**Link del diagrama relacional:** *(se mueve apretando tecla espacio y arrastrando con el cursor)*
+[https://dbdiagram.io/d/inventario-69f4e6a0c6a36f9c1bdbda63](https://dbdiagram.io/d/inventario-69f4e6a0c6a36f9c1bdbda63)
 
 ---
 
-### 2. Materiales Directos por Orden
-
-- RF06 — Registrar el consumo de materiales directos asociado a cada orden de producción
-- RF07 — Permitir múltiples materiales directos por orden, con cantidad y unidad de medida
-- RF08 — Obtener el costo de cada material directo del inventario de materiales al costo promedio vigente
-- RF09 — Calcular el costo total de materiales directos por orden (cantidad × costo promedio por cada material)
+> **Nota:** La lógica de actualizar promedios y cantidades al hacer operaciones se haría desde Java o con triggers en SQL.
 
 ---
 
-### 3. Mano de Obra Directa por Orden
+## 1. Gestión Básica
 
-- RF10 — Registrar las horas trabajadas por operario en cada orden de producción
-- RF11 — Definir la tarifa por hora de cada tipo de operario o categoría laboral
-- RF12 — Calcular el costo de mano de obra directa por orden (horas × tarifa por hora)
-- RF13 — Permitir múltiples operarios en una misma orden
+El sistema debe permitir registrar:
 
----
+- Unidades de medida
+- Productos
+- Materiales
+- Clientes
+- Proveedores
 
-### 4. Costo Total y Cierre de Orden
-
-- RF14 — Calcular el costo total de producción por orden: Materiales Directos + Mano de Obra Directa
-- RF15 — Calcular el costo unitario de producción al cerrar la orden (costo total ÷ unidades producidas)
+Todos los registros deben tener identificadores únicos y datos obligatorios válidos.
 
 ---
 
-### 5. Ingreso al Inventario de Producto Terminado
+## 2. Compras de Materiales
 
-- RF16 — Ingresar al inventario de productos las unidades producidas de una orden de producción, actualizando la cantidad disponible del producto terminado y recalculando su costo promedio ponderado.
+El sistema debe permitir crear órdenes de compra con materiales, cantidades y costos.
 
 ---
 
-### 6. Consultas y Reportes
+## 3. Inventario de Materiales (Valoración por Promedio)
 
-- RF17 — Reporte de costo por orden de producción: desglose de materiales directos y mano de obra
-- RF18 — Reporte de inventario valorado: stock × costo promedio por producto (valor total en bodega)
-- RF19 — Reporte de órdenes por período: órdenes abiertas, cerradas y costo acumulado
+El sistema debe:
 
-### 7. Inventario de Materiales
+- Mantener existencias por material.
+- Calcular el costo promedio con cada entrada *(se puede hacer esta lógica desde Java o con un trigger en SQL)*:
 
-- RF20 - Mantener en el inventario de materiales el stock actual y su costo promedio ponderado, permitiendo su actualización cuando se registren entradas o consumos.
+$$\text{Costo Promedio} = \frac{(\text{stock anterior} \times \text{costo anterior}) + (\text{cantidad comprada} \times \text{costo unitario compra})}{\text{stock anterior} + \text{cantidad comprada}}$$
+
+- Las nuevas órdenes de producción usarán el precio promedio nuevo.
+
+---
+
+## 4. Producción
+
+El sistema debe permitir crear órdenes de producción con:
+
+- Producto
+- Cliente
+- Estado
+
+Y debe registrar:
+
+- Consumo de materiales (salidas de inventario)
+- Unidades producidas
+
+---
+
+## 5. Receta
+
+El sistema debe definir qué materiales y cantidades requiere cada producto.
+
+Esta receta debe usarse como base para el consumo en producción.
+
+---
+
+## 6. Mano de Obra Directa
+
+El sistema debe registrar:
+
+- Operario
+- Horas trabajadas
+- Tarifa por hora
+
+Debe calcular el **costo total de mano de obra** por orden.
+
+---
+
+## 7. Costo de Producción
+
+El sistema debe calcular el costo total de cada orden:
+
+$$\text{Costo Total} = \text{valor total materiales} + \text{valor total mano de obra}$$
+
+Y el costo unitario:
+
+$$\text{Costo Unitario} = \frac{\text{Costo Total}}{\text{unidades producidas}}$$
+
+---
+
+## 8. Inventario de Productos Terminados
+
+El sistema debe:
+
+- Mantener existencias por producto.
+- Actualizar el costo promedio al ingresar producción terminada.
